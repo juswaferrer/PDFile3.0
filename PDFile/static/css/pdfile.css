@@ -1,0 +1,225 @@
+/* Base styles */
+#main-container {
+    display: flex;
+    height: calc(100vh - 60px); /* Adjust according to header height */
+    position: fixed;
+}
+
+#history-container {
+    position: fixed;
+    top: 80px;
+    bottom: 0;
+    left: 0;
+    width: 300px;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    z-index: 1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+}
+
+#chat-container {
+    margin-left: 300px;
+    margin-right: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    width: fit-content;
+    max-width: 850px;
+    min-width: 850px;
+}
+
+#history {
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    font-family: Arial;
+    font-size: 12pt;
+}
+
+.history-item:hover {
+    background-color: #e9ecef;
+    cursor: pointer;
+}
+
+#response {
+    overflow-y: scroll;
+    max-height: calc(100vh - 200px);
+}
+
+.message-container {
+    margin-bottom: 20px;
+    clear: both;
+    overflow: auto;
+}
+
+#loading-gif {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+#loading-gif img {
+    width: 10vh;
+    height: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+}
+
+#loading-label {
+    display: none;
+    position: fixed;
+    text-align: center;
+    margin-top: 280px;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    font-family: Arial;
+    font-size: 12pt;
+}
+
+.user-message {
+    background-color: #e5e5e5;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+    word-wrap: break-word;
+    float: right;
+    clear: both;
+    margin-top: 10px;
+    margin-right: 10px;
+    font-family: Arial;
+    font-size: 12pt;
+}
+
+.bot-message {
+    background-color: #bee5eb;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+    word-wrap: break-word;
+    float: left;
+    clear: both;
+    margin-top: 10px;
+    margin-left: 10px;
+    font-family: Arial;
+    font-size: 12pt;
+}
+
+#user_input {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    max-width: 600px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 20px;
+    box-sizing: border-box;
+}
+
+#user_query {
+    width: calc(100% - 90px); /* Adjust as needed */
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+#send_button {
+    width: 80px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 20px;
+    border: none;
+    background-color: #d93025;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#send_button:hover {
+    background-color: #45a049;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.logo {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.logo img {
+    width: 80px;
+    height: 80px;
+}
+
+h1 {
+    display: inline-block;
+    vertical-align: middle;
+    font-family: 'Times New Roman';
+    font-size: 30px;
+    margin-left: 10px;
+    margin-bottom: 12px;
+}
+
+h1 span {
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Responsive styles */
+@media only screen and (max-width: 768px) {
+    #main-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    #history-container {
+        width: 100%;
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+        top: auto;
+    }
+
+    #chat-container {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+        max-width: none;
+        min-width: none;
+    }
+
+    .user-message,
+    .bot-message {
+        max-width: 100%;
+    }
+}

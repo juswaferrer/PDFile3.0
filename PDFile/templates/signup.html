@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFile - SignUp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #01412b, #0e6d4d, #5ab8ab);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 150px;
+            background-color: #f5efefd2;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(24, 23, 23, 0.3);
+            overflow: hidden;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .top {
+            background: linear-gradient(135deg, #03545f, #0f8d96);
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .top-title {
+            color: #ebe8e8;
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            width: 80px;
+            border: 4px solid #d1d1d1;
+            border-radius: 50%;
+        }
+
+        .bottom {
+            background: #fff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-group input,
+        .form-group button {
+            width: 100%;
+            height: 45px;
+            background: #333;
+            border: none;
+            padding: 0 15px 0 45px;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #bbb;
+        }
+
+        .form-group input:focus {
+            background: #444;
+        }
+
+        .form-group .fa {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #bbb;
+        }
+
+        .form-group button {
+            width: auto;
+            background: linear-gradient(135deg, #036e81, #027234);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            padding: 0 20px;
+            margin-top: 10px;
+        }
+
+        .form-group button:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s;
+            z-index: -1;
+        }
+
+        .form-group button:hover:before {
+            left: 0;
+        }
+
+        .form-group button:hover {
+            background: linear-gradient(135deg, #015a29, #058096);
+            box-shadow: 0 0 10px rgba(5, 137, 146, 0.5);
+        }
+
+        .error-message {
+            color: #DD1533;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 0.75em 1.25em;
+            margin-top: 1em;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top">
+            <div class="top-title">
+                <h1>Sign Up</h1>
+                <img src="logo.png" alt="Logo" class="logo">
+            </div>
+        </div>
+        <main class="bottom">
+            <form id="signup-form" action="{{ url_for('signup') }}" method="post">
+                <div class="form-group">
+                    <input type="email" id="email" name="email" placeholder="Email" required>
+                    <i class="fa fa-envelope"></i>
+                    <button type="button" class="send-otp" onclick="sendOTP()">Send OTP</button>
+                </div>
+                <div class="form-group">
+                    <input type="number" id="otp" name="otp" placeholder="Enter OTP" required>
+                    <i class="fa fa-key"></i>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <i class="fa fa-user"></i>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <i class="fa fa-lock"></i>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+        </main>
+    </div>
+
+    <div class="alert alert-danger alert-dismissible fade show" id="code-error-alert" style="display: none;" role="alert">
+        Incorrect verification code. Please try again.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function sendOTP() {
+            var email = document.getElementById("email").value;
+            if (!email) {
+                alert("Please enter your email first.");
+                return;
+            }
+    
+            fetch('/send_otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showNotification("OTP has been sent to your email.", "success");
+                } else {
+                    showNotification("Failed to send OTP. Please try again.", "error");
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    
+        function showNotification(message, type) {
+            var notification = document.getElementById("notification");
+            notification.innerText = message;
+            if (type === "success") {
+                notification.classList.add("success");
+                notification.classList.remove("error");
+            } else if (type === "error") {
+                notification.classList.add("error");
+                notification.classList.remove("success");
+            }
+            notification.style.display = "block";
+            setTimeout(function() {
+                notification.style.display = "none";
+            }, 5000);
+        }
+    
+        function validateForm() {
+            var email = document.getElementById("email").value;
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var otp = document.getElementById("otp").value;
+    
+            if (email === "" || username === "" || password === "" || otp === "") {
+                document.getElementById("error-alert").style.display = "block";
+                return false;
+            }
+            return true;
+        }
+    
+        document.getElementById("signup-form").addEventListener("submit", function(event) {
+            if (!validateForm()) {
+                event.preventDefault();
+            } else {
+                var isValidCode = true; // Replace with your code validation logic
+    
+                if (!isValidCode) {
+                    document.getElementById("code-error-alert").style.display = "block";
+                    event.preventDefault();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

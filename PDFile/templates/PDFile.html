@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDFile</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pdfile.css') }}">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+        </div>
+        <h1><span style="color: #d93025;">PDF</span>ile</h1>
+    </header>
+
+    <div id="main-container">
+        <div id="history-container">
+            <h1 style="font-family: Arial; font-size: 20px;">PDF-History</h1>
+            <div id="history"></div>
+        </div>
+    <div id="chat-container">
+    <div id="response" class="clearfix"></div>
+
+    <form id="user_input">
+        <label for="pdf_file" style="font-family: Arial;">Upload PDF:</label>
+        <input type="file" id="pdf_file" name="pdf_file" accept=".pdf">
+        <br>
+        <div style="text-align: center;">
+            <input type="text" id="user_query" name="user_query" placeholder="Type your question...">
+            <button type="submit" id="send_button">Send</button>
+        </div>
+    </form>
+
+            <div id="loading-label" style="font-weight: bold; font-style: italic;">Processing your question, Please Wait...</div>
+            <div id="loading-gif">
+                <img src="{{ url_for('static', filename='images/loading.gif') }}" alt="Loading...">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('user_input').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var pdfFile = document.getElementById('pdf_file').files[0];
+    var userQuery = document.getElementById('user_query').value;
+    if (!pdfFile) {
+    // Display an error message if no PDF file is uploaded
+    alert("No File Chosen!\nPlease upload a PDF file.");
+    return;
+    }
+    if (!userQuery.trim()) {
+        // Display an error message if user's query is empty
+        alert("Please enter your question.");
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append('pdf_file', document.getElementById('pdf_file').files[0]);
+    formData.append('user_query', document.getElementById('user_query').value);
+
+    // Disable the send button to prevent multiple submissions
+    document.getElementById('send_button').disabled = true;
+
+    // Show loading label and GIF
+    document.getElementById('loading-label').style.display = 'block';
+    document.getElementById('loading-gif').style.display = 'block';
+    document.getElementById('send_button').disabled = true;
+    document.getElementById('send_button').style.cursor = 'not-allowed';
+
+    fetch('/chat', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide loading label and GIF
+        document.getElementById('loading-label').style.display = 'none';
+        document.getElementById('loading-gif').style.display = 'none';
+        document.getElementById('send_button').disabled = false;
+        document.getElementById('send_button').style.cursor = 'pointer';
+        
+        var title = data.title;
+        var answer = data.answer;
+
+        // Update response container
+        var responseContainer = document.getElementById('response');
+        responseContainer.innerHTML += `
+            <div class="message-container">
+                <div class="user-message">${document.getElementById('user_query').value}</div>
+                <div class="bot-message">${answer}</div>
+            </div>`;
+
+        // Clear the input box
+        document.getElementById('user_query').value = '';
+
+        // Re-enable the send button after receiving the response
+        document.getElementById('send_button').disabled = false;
+
+        // Update history
+        updateHistory();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Hide loading label and GIF in case of error
+        document.getElementById('loading-label').style.display = 'none';
+        document.getElementById('loading-gif').style.display = 'none';
+        document.getElementById('send_button').disabled = false;
+        document.getElementById('send_button').style.cursor ='hand';
+        document.getElementById('response').innerHTML += `<div class="error">Error: ${error.message}</div>`;
+    });
+});
+        function updateHistory() {
+            fetch('/conversations')
+            .then(response => response.json())
+            .then(data => {
+                var historyContainer = document.getElementById('history');
+                historyContainer.innerHTML = ''; // Clear existing history
+
+                for (let pdfTitle in data) {
+                    let historyItem = document.createElement('div');
+                    historyItem.classList.add('history-item');
+                    historyItem.innerHTML = pdfTitle;
+                    historyItem.addEventListener('click', function() {
+                        displayConversations(pdfTitle, data[pdfTitle]);
+                    });
+                    historyContainer.appendChild(historyItem);
+                }
+            });
+        }
+
+        function displayConversations(title, conversations) {
+            var responseContainer = document.getElementById('response');
+            responseContainer.innerHTML = ''; // Clear current conversation
+
+            conversations.forEach(function(convo) {
+                responseContainer.innerHTML += `
+                    <div class="message-container">
+                        <div class="user-message">${convo.question}</div>
+                        <div class="bot-message">${convo.answer}</div>
+                    </div>`;
+            });
+        }
+        // Initial load of history
+        updateHistory();
+    </script>    
+    
+</body>
+</html>
